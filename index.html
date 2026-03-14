@@ -426,7 +426,7 @@ body {
 
 <!-- MUSIC -->
 <audio id="music" loop>
-  <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_9c7d6c.mp3" type="audio/mpeg">
+  <source src="music.mp3" type="audio/mpeg">
 </audio>
 <button class="music-btn" id="music-btn" title="Toggle music">
   <span class="note-icon">♪</span>
@@ -651,8 +651,16 @@ const music    = document.getElementById('music');
 const musicBtn = document.getElementById('music-btn');
 let musicOn = false;
 musicBtn.addEventListener('click', () => {
-  if (musicOn) { music.pause(); musicOn = false; musicBtn.classList.remove('playing'); }
-  else         { music.play().catch(()=>{}); musicOn = true; musicBtn.classList.add('playing'); }
+  if (musicOn) {
+    music.pause(); musicOn = false; musicBtn.classList.remove('playing');
+  } else {
+    music.volume = 0.5;
+    const playPromise = music.play();
+    if (playPromise !== undefined) {
+      playPromise.then(() => { musicOn = true; musicBtn.classList.add('playing'); })
+                 .catch(() => { musicBtn.title = 'Music unavailable'; });
+    }
+  }
 });
 
 /* NO BUTTON */
@@ -674,7 +682,7 @@ btnNo.addEventListener('click', escapeNo);
 document.getElementById('btn-yes').addEventListener('click', () => {
   document.getElementById('proposal-card').classList.add('fade-out');
   launchHearts(80);
-  music.play().catch(()=>{}); musicOn = true; musicBtn.classList.add('playing');
+  music.volume = 0.5; music.play().then(() => { musicOn = true; musicBtn.classList.add('playing'); }).catch(()=>{});
   if (navigator.vibrate) navigator.vibrate([60, 30, 60]);
   setTimeout(() => {
     document.getElementById('s-proposal').classList.remove('active');
