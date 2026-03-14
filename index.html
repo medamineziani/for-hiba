@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For Hiba 🤍</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --rose:    #c9627a;
+  --rose-l:  #f5d6de;
+  --cream:   #fdf6f0;
+  --petal:   #fce8ef;
+  --blush:   #f7ccd6;
+  --text:    #3a2430;
+  --muted:   #9a7580;
+  --white:   #ffffff;
+  --card-shadow: 0 8px 48px rgba(180,80,110,.10);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Jost', sans-serif;
+  background: var(--cream);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── CANVAS ── */
+#canvas {
+  position: fixed; inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── SCREENS ── */
+.screen {
+  display: none;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+.screen.active { display: flex; }
+
+/* ─── PROPOSAL SCREEN ─── */
+#s-proposal {
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: linear-gradient(160deg, var(--cream) 0%, var(--petal) 100%);
+}
+
+.proposal-card {
+  background: var(--white);
+  border-radius: 32px;
+  padding: 56px 48px;
+  max-width: 460px;
+  width: 100%;
+  text-align: center;
+  box-shadow: var(--card-shadow);
+  position: relative;
+  overflow: hidden;
+  transition: opacity .5s, transform .5s, filter .5s;
+}
+.proposal-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--blush), var(--rose), var(--blush));
+}
+
+.proposal-card.fade-out {
+  opacity: 0;
+  transform: scale(.96) translateY(10px);
+  filter: blur(6px);
+}
+
+.petal-top {
+  font-size: 40px;
+  margin-bottom: 20px;
+  display: block;
+  animation: float 4s ease-in-out infinite;
+}
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+.proposal-card h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 38px;
+  font-weight: 300;
+  color: var(--rose);
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.proposal-card .tagline {
+  font-size: 14px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 28px;
+}
+
+.proposal-card .question {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--text);
+  line-height: 1.6;
+  margin-bottom: 36px;
+}
+
+.btn-group {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  border: none;
+  border-radius: 999px;
+  padding: 14px 32px;
+  font-family: 'Jost', sans-serif;
+  font-size: 14px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform .2s, box-shadow .2s;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn:active { transform: translateY(0); }
+
+.btn-yes {
+  background: var(--rose);
+  color: var(--white);
+  box-shadow: 0 6px 24px rgba(180,80,110,.35);
+}
+.btn-yes:hover { box-shadow: 0 10px 32px rgba(180,80,110,.45); }
+
+.btn-no {
+  background: var(--rose-l);
+  color: var(--rose);
+}
+
+.hint {
+  margin-top: 20px;
+  font-size: 12px;
+  color: var(--muted);
+  letter-spacing: .5px;
+}
+
+/* ─── MAIN SCREEN ─── */
+#s-main {
+  flex-direction: column;
+  align-items: center;
+  padding: 0 24px 80px;
+  background: linear-gradient(180deg, var(--petal) 0%, var(--cream) 300px);
+  animation: fadeIn .7s ease;
+}
+@keyframes fadeIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:none; } }
+
+/* header */
+.main-header {
+  text-align: center;
+  padding: 64px 0 48px;
+  width: 100%;
+}
+.main-header h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(48px, 10vw, 80px);
+  font-weight: 300;
+  color: var(--rose);
+  letter-spacing: 2px;
+  line-height: 1;
+  margin-bottom: 12px;
+}
+.main-header .sub {
+  font-size: 13px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* tabs */
+.tabs {
+  display: flex;
+  gap: 6px;
+  background: var(--white);
+  border-radius: 999px;
+  padding: 5px;
+  box-shadow: 0 2px 20px rgba(180,80,110,.08);
+  margin-bottom: 48px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.tab {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 22px;
+  font-family: 'Jost', sans-serif;
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  background: transparent;
+  color: var(--muted);
+  transition: all .25s;
+}
+.tab.active {
+  background: var(--rose);
+  color: var(--white);
+  box-shadow: 0 4px 16px rgba(180,80,110,.3);
+}
+
+/* panels */
+.panel { display: none; max-width: 720px; width: 100%; }
+.panel.active { display: block; animation: fadeIn .4s ease; }
+
+/* ─── PHOTO GALLERY ─── */
+.gallery-intro {
+  text-align: center;
+  margin-bottom: 36px;
+}
+.gallery-intro h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 32px;
+  font-weight: 300;
+  color: var(--rose);
+  margin-bottom: 8px;
+}
+.gallery-intro p {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.slideshow {
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  background: var(--petal);
+  box-shadow: var(--card-shadow);
+  margin-bottom: 20px;
+  aspect-ratio: 4/3;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity .8s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+}
+.slide.active { opacity: 1; }
+
+.slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* placeholder slides (shown when no real photo) */
+.slide-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--petal), var(--blush));
+  gap: 16px;
+  padding: 32px;
+  text-align: center;
+}
+.slide-placeholder .ph-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
+.slide-placeholder .ph-label {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--rose);
+}
+.slide-placeholder .ph-sub {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.slide-caption {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 20px 24px;
+  background: linear-gradient(0deg, rgba(58,36,48,.55) 0%, transparent 100%);
+  color: #fff;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px;
+  font-style: italic;
+  font-weight: 300;
+}
+
+.slide-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--blush);
+  cursor: pointer;
+  transition: all .3s;
+  border: none;
+}
+.dot.active {
+  background: var(--rose);
+  width: 18px;
+  border-radius: 999px;
+}
+
+.slide-arrows {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+.arrow-btn {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 1.5px solid var(--blush);
+  background: var(--white);
+  color: var(--rose);
+  cursor: pointer;
+  font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s;
+}
+.arrow-btn:hover {
+  background: var(--rose);
+  color: var(--white);
+  border-color: var(--rose);
+}
+
+/* upload hint */
+.upload-hint {
+  margin-top: 24px;
+  padding: 16px 20px;
+  background: var(--petal);
+  border-radius: 16px;
+  border: 1.5px dashed var(--blush);
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+/* ─── LOVE LETTER ─── */
+.letter-wrap {
+  background: var(--white);
+  border-radius: 24px;
+  padding: 56px 48px;
+  box-shadow: var(--card-shadow);
+  position: relative;
+  overflow: hidden;
+}
+.letter-wrap::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 4px;
+  background: linear-gradient(90deg, var(--blush), var(--rose), var(--blush));
+}
+
+.letter-date {
+  font-size: 12px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 32px;
+}
+
+.letter-salut {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--rose);
+  margin-bottom: 24px;
+}
+
+.letter-body {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 300;
+  line-height: 2;
+  color: var(--text);
+}
+.letter-body p { margin-bottom: 24px; }
+.letter-body em {
+  color: var(--rose);
+  font-style: italic;
+}
+
+.letter-sign {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-style: italic;
+  color: var(--rose);
+  margin-top: 40px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 1.2s, transform 1.2s;
+}
+.letter-sign.reveal { opacity: 1; transform: none; }
+
+/* ─── REASONS ─── */
+.reasons-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 520px) { .reasons-grid { grid-template-columns: 1fr; } }
+
+.reason-card {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 28px 24px;
+  box-shadow: 0 4px 24px rgba(180,80,110,.07);
+  transition: transform .25s, box-shadow .25s;
+  cursor: default;
+}
+.reason-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(180,80,110,.14);
+}
+.reason-icon {
+  font-size: 28px;
+  margin-bottom: 12px;
+  display: block;
+}
+.reason-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--rose);
+  margin-bottom: 8px;
+}
+.reason-text {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+/* ─── FUTURE ─── */
+.future-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.future-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  background: var(--white);
+  border-radius: 20px;
+  padding: 24px 28px;
+  box-shadow: 0 4px 24px rgba(180,80,110,.07);
+}
+.future-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 36px;
+  font-weight: 300;
+  color: var(--blush);
+  line-height: 1;
+  flex-shrink: 0;
+  width: 40px;
+}
+.future-content h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--rose);
+  margin-bottom: 6px;
+}
+.future-content p {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+/* ─── HEARTS CANVAS ─── */
+#hearts { position: fixed; inset: 0; pointer-events: none; z-index: 9999; }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 520px) {
+  .proposal-card { padding: 40px 28px; }
+  .letter-wrap { padding: 36px 24px; }
+  .tabs { gap: 4px; }
+  .tab { padding: 8px 14px; font-size: 11px; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="hearts"></canvas>
+
+<!-- ══════════ PROPOSAL SCREEN ══════════ -->
+<section class="screen active" id="s-proposal">
+  <div class="proposal-card" id="proposal-card">
+    <span class="petal-top">🌸</span>
+    <h1>Hiba</h1>
+    <p class="tagline">A message, just for you</p>
+    <p class="question">
+      Will you accept to be<br>the love of my life?
+    </p>
+    <div class="btn-group">
+      <button class="btn btn-yes" id="btn-yes">Yes, always ✦</button>
+      <button class="btn btn-no" id="btn-no">No</button>
+    </div>
+    <p class="hint">"No" is not in our story 🌹</p>
+  </div>
+</section>
+
+<!-- ══════════ MAIN SCREEN ══════════ -->
+<section class="screen" id="s-main">
+
+  <header class="main-header">
+    <h1>Hiba</h1>
+    <p class="sub">My favourite person in the world</p>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab active" data-panel="gallery">📷 Photos</button>
+    <button class="tab" data-panel="letter">✉ Letter</button>
+    <button class="tab" data-panel="reasons">🌸 Why you</button>
+    <button class="tab" data-panel="future">🤍 My promises</button>
+  </nav>
+
+  <!-- ── GALLERY ── -->
+  <div class="panel active" id="panel-gallery">
+    <div class="gallery-intro">
+      <h2>Every photo tells a story</h2>
+      <p>Replace the placeholders below with your favourite photos of her</p>
+    </div>
+
+    <div class="slideshow" id="slideshow">
+
+      <div class="slide active" id="slide-0">
+        <img src="image1.jpg" alt="Hiba">
+        <div class="slide-caption">The first one I think of when I close my eyes</div>
+      </div>
+
+      <div class="slide" id="slide-1">
+        <img src="image2.jpg" alt="Hiba">
+        <div class="slide-caption">The way you smile when you think nobody's watching</div>
+      </div>
+
+      <div class="slide" id="slide-2">
+        <img src="image3.jpg" alt="Hiba">
+        <div class="slide-caption">Some moments are better than any words I know</div>
+      </div>
+
+
+
+    </div>
+
+    <div class="slide-dots" id="slide-dots"></div>
+    <div class="slide-arrows">
+      <button class="arrow-btn" id="prev-btn">&#8592;</button>
+      <button class="arrow-btn" id="next-btn">&#8594;</button>
+    </div>
+
+
+  </div>
+
+  <!-- ── LETTER ── -->
+  <div class="panel" id="panel-letter">
+    <div class="letter-wrap" id="letter-wrap">
+      <p class="letter-date" id="letter-date"></p>
+      <p class="letter-salut">My dearest Hiba,</p>
+      <div class="letter-body" id="letter-body">
+        <!-- text written by JS for animated reveal -->
+      </div>
+      <div class="letter-sign" id="letter-sign">
+        With everything I have — I promise. 🌸
+      </div>
+    </div>
+  </div>
+
+  <!-- ── REASONS ── -->
+  <div class="panel" id="panel-reasons">
+    <div class="reasons-grid">
+      <div class="reason-card">
+        <span class="reason-icon">🌊</span>
+        <div class="reason-title">Your calm</div>
+        <p class="reason-text">You make everything feel quieter. Just talking with you lowers the noise of everything else.</p>
+      </div>
+      <div class="reason-card">
+        <span class="reason-icon">✨</span>
+        <div class="reason-title">Your mind</div>
+        <p class="reason-text">The way you think, the things you notice — you see the world differently and you make me see it too.</p>
+      </div>
+      <div class="reason-card">
+        <span class="reason-icon">🌹</span>
+        <div class="reason-title">Your warmth</div>
+        <p class="reason-text">You have a kind of softness that's rare. You make people feel seen. You make me feel seen.</p>
+      </div>
+      <div class="reason-card">
+        <span class="reason-icon">🌙</span>
+        <div class="reason-title">Those late nights</div>
+        <p class="reason-text">The long conversations, the laughs that come from nowhere — I look forward to them more than I've said.</p>
+      </div>
+      <div class="reason-card">
+        <span class="reason-icon">🎵</span>
+        <div class="reason-title">Your voice</div>
+        <p class="reason-text">It sounds like home. Even from far away, it feels like you're right here.</p>
+      </div>
+      <div class="reason-card">
+        <span class="reason-icon">🌸</span>
+        <div class="reason-title">Just you</div>
+        <p class="reason-text">I can't explain all of it. Some things just are. And you just are — everything I wanted without knowing I was looking.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FUTURE ── -->
+  <div class="panel" id="panel-future">
+    <div class="future-list">
+      <div class="future-item">
+        <div class="future-num">🤍</div>
+        <div class="future-content">
+          <h3>I will love you</h3>
+          <p>Every day. Not just when it's easy or beautiful — but on the quiet ordinary ones too. Consistently, fully, and without conditions.</p>
+        </div>
+      </div>
+      <div class="future-item">
+        <div class="future-num">🛡</div>
+        <div class="future-content">
+          <h3>I will protect you</h3>
+          <p>From anything that tries to dim your light. You will never face the hard days alone. I will always be your corner, your shelter, your safe place.</p>
+        </div>
+      </div>
+      <div class="future-item">
+        <div class="future-num">🌸</div>
+        <div class="future-content">
+          <h3>I will make you happy</h3>
+          <p>Not perfectly — I'm human. But I will try every single day to add something good to your life. To make you smile, to make you feel chosen, to make it worth it.</p>
+        </div>
+      </div>
+      <div class="future-item">
+        <div class="future-num">✦</div>
+        <div class="future-content">
+          <h3>I will treat you well</h3>
+          <p>With respect, tenderness, and patience. You will never have to wonder where you stand with me. I will show you — every day — not just say it.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<script>
+/* ── HEARTS ANIMATION ── */
+const hCanvas = document.getElementById('hearts');
+const hCtx = hCanvas.getContext('2d');
+let hearts = [];
+let animating = false;
+
+function resizeCanvas() {
+  hCanvas.width = window.innerWidth;
+  hCanvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+function spawnHearts(n = 30) {
+  for (let i = 0; i < n; i++) {
+    hearts.push({
+      x: Math.random() * window.innerWidth,
+      y: window.innerHeight + 20,
+      size: 10 + Math.random() * 20,
+      speed: 1.5 + Math.random() * 2.5,
+      drift: (Math.random() - 0.5) * 1.5,
+      opacity: 0.6 + Math.random() * 0.4,
+      color: ['#c9627a','#f5d6de','#f7ccd6','#e8a0b0'][Math.floor(Math.random()*4)],
+      delay: Math.random() * 80
+    });
+  }
+}
+
+function drawHeart(ctx, x, y, size, color, opacity) {
+  ctx.save();
+  ctx.globalAlpha = opacity;
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  ctx.bezierCurveTo(x, y - size * 0.3, x - size * 0.5, y - size * 0.7, x - size * 0.5, y - size * 0.45);
+  ctx.bezierCurveTo(x - size * 0.5, y - size * 0.85, x, y - size * 0.85, x, y - size * 0.55);
+  ctx.bezierCurveTo(x, y - size * 0.85, x + size * 0.5, y - size * 0.85, x + size * 0.5, y - size * 0.45);
+  ctx.bezierCurveTo(x + size * 0.5, y - size * 0.7, x, y - size * 0.3, x, y);
+  ctx.fill();
+  ctx.restore();
+}
+
+function animateHearts() {
+  if (!animating) return;
+  hCtx.clearRect(0, 0, hCanvas.width, hCanvas.height);
+  hearts = hearts.filter(h => {
+    if (h.delay > 0) { h.delay--; return true; }
+    h.y -= h.speed;
+    h.x += h.drift;
+    h.opacity -= 0.004;
+    drawHeart(hCtx, h.x, h.y, h.size, h.color, h.opacity);
+    return h.opacity > 0 && h.y > -50;
+  });
+  if (hearts.length > 0) requestAnimationFrame(animateHearts);
+  else animating = false;
+}
+
+function launchHearts(n = 40) {
+  spawnHearts(n);
+  if (!animating) { animating = true; animateHearts(); }
+}
+
+/* ── MOVING NO BUTTON ── */
+const btnNo = document.getElementById('btn-no');
+function escapeNo() {
+  const maxX = window.innerWidth - btnNo.offsetWidth - 20;
+  const maxY = window.innerHeight - btnNo.offsetHeight - 20;
+  btnNo.style.position = 'fixed';
+  btnNo.style.left = Math.max(10, Math.random() * maxX) + 'px';
+  btnNo.style.top  = Math.max(10, Math.random() * maxY) + 'px';
+  btnNo.style.zIndex = 9998;
+}
+btnNo.addEventListener('mouseover', escapeNo);
+btnNo.addEventListener('touchstart', e => { e.preventDefault(); escapeNo(); });
+btnNo.addEventListener('click', escapeNo);
+
+/* ── YES BUTTON ── */
+document.getElementById('btn-yes').addEventListener('click', () => {
+  const card = document.getElementById('proposal-card');
+  card.classList.add('fade-out');
+  launchHearts(60);
+  if (navigator.vibrate) navigator.vibrate([60, 30, 60]);
+  setTimeout(() => {
+    document.getElementById('s-proposal').classList.remove('active');
+    const main = document.getElementById('s-main');
+    main.classList.add('active');
+    initLetter();
+  }, 500);
+});
+
+/* ── TABS ── */
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
+    if (tab.dataset.panel === 'letter') revealSign();
+  });
+});
+
+/* ── SLIDESHOW ── */
+const slides = document.querySelectorAll('.slide');
+const dotsContainer = document.getElementById('slide-dots');
+let current = 0;
+let autoTimer;
+
+slides.forEach((_, i) => {
+  const dot = document.createElement('button');
+  dot.className = 'dot' + (i === 0 ? ' active' : '');
+  dot.addEventListener('click', () => goTo(i));
+  dotsContainer.appendChild(dot);
+});
+
+function goTo(n) {
+  slides[current].classList.remove('active');
+  dotsContainer.children[current].classList.remove('active');
+  current = (n + slides.length) % slides.length;
+  slides[current].classList.add('active');
+  dotsContainer.children[current].classList.add('active');
+  resetAuto();
+}
+
+function resetAuto() {
+  clearInterval(autoTimer);
+  autoTimer = setInterval(() => goTo(current + 1), 4000);
+}
+resetAuto();
+
+document.getElementById('prev-btn').addEventListener('click', () => goTo(current - 1));
+document.getElementById('next-btn').addEventListener('click', () => goTo(current + 1));
+
+/* ── LETTER ── */
+const letterParagraphs = [
+  "There are things I've wanted to say for a long time — not as words, but as promises. Real ones. The kind that don't expire.",
+  "<em>I will love you.</em> Not just when it's easy or beautiful or simple. Every day, quietly, consistently — the way you deserve to be loved.",
+  "<em>I will protect you.</em> From anything that tries to hurt you, from the world on its hard days, and from ever feeling alone. You will always have someone in your corner. Always me.",
+  "<em>I will make you happy.</em> Not perfectly — I'm human and I'll stumble. But I will try every single day to bring something good into your life, the way you already bring it into mine without even trying.",
+  "<em>I will treat you well.</em> With respect, with tenderness, with patience. You will never have to wonder how I feel about you. You will know — because I'll show you, not just say it.",
+  "These aren't just words, Hiba. They are the things I choose, every morning, for you."
+];
+
+function initLetter() {
+  const now = new Date();
+  document.getElementById('letter-date').textContent =
+    now.toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
+
+  const body = document.getElementById('letter-body');
+  body.innerHTML = '';
+  letterParagraphs.forEach((text, i) => {
+    const p = document.createElement('p');
+    p.innerHTML = text;
+    p.style.opacity = '0';
+    p.style.transform = 'translateY(12px)';
+    p.style.transition = 'opacity .8s, transform .8s';
+    body.appendChild(p);
+    setTimeout(() => {
+      p.style.opacity = '1';
+      p.style.transform = 'none';
+    }, 300 + i * 500);
+  });
+  setTimeout(revealSign, 300 + letterParagraphs.length * 500 + 400);
+}
+
+function revealSign() {
+  document.getElementById('letter-sign').classList.add('reveal');
+}
+
+/* ── AMBIENT HEARTS on main ── */
+setInterval(() => {
+  if (document.getElementById('s-main').classList.contains('active')) {
+    spawnHearts(3);
+    if (!animating) { animating = true; animateHearts(); }
+  }
+}, 3000);
+</script>
+</body>
+</html>
